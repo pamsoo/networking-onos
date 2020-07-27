@@ -64,9 +64,14 @@ class OnosSecurityGroupHandler(object):
                            resources.SECURITY_GROUP, events.AFTER_UPDATE)
 
     def _sg_callback(self, callback, resource, event, trigger, **kwargs):
-        context = kwargs['context']
-        res = kwargs.get(resource)
-        res_id = kwargs.get("%s_id" % resource)
+        if 'payload' in kwargs:
+            context = kwargs['payload'].context
+            res = kwargs['payload'].desired_state
+            res_id = kwargs['payload'].resource_id
+        else:
+            context = kwargs['context']
+            res = kwargs.get(resource)
+            res_id = kwargs.get("%s_id" % resource)
         if res_id is None:
             res_id = res.get('id')
         ops = _OPERATION_MAPPING[event]
